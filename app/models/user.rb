@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+	has_many :microposts, dependent: :destroy
 	before_save {email.downcase!}
 	validates :name, 	presence: true,
 						length: {maximum: 50}
@@ -17,5 +18,10 @@ class User < ActiveRecord::Base
     cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
                                                   BCrypt::Engine.cost
     BCrypt::Password.create(string, cost: cost)
+  end
+
+  # Defines a proto-feed.
+  def feed
+  	Micropost.where("user_id = ?", id)
   end
 end
